@@ -52,7 +52,7 @@ public class JDBCGPFDISTOptionsMetadata {
     private String sqlQuery;
 
     private String jdbcUsername;
-    private String jdbcpassword;
+    private String jdbcPassword;
     private String jdbcUrl;
     private String jdbcDriverClassName;
 
@@ -264,13 +264,13 @@ public class JDBCGPFDISTOptionsMetadata {
         this.jdbcUsername = jdbcUsername;
     }
 
-    public String getJdbcpassword() {
-        return jdbcpassword;
+    public String getJdbcPassword() {
+        return jdbcPassword;
     }
 
     @ModuleOption("jdbc password")
-    public void setJdbcpassword(String jdbcpassword) {
-        this.jdbcpassword = jdbcpassword;
+    public void setJdbcPassword(String jdbcPassword) {
+        this.jdbcPassword = jdbcPassword;
     }
 
     public String getJdbcUrl() {
