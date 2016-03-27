@@ -54,7 +54,7 @@ public class JDBCGPFDISTOptionsMetadata {
     private String jdbcUsername;
     private String jdbcpassword;
     private String jdbcUrl;
-    private String jdbDriverClassName;
+    private String jdbcDriverClassName;
 
 
     public int getPort() {
@@ -282,12 +282,12 @@ public class JDBCGPFDISTOptionsMetadata {
         this.jdbcUrl = jdbcUrl;
     }
 
-    public String getJdbDriverClassName() {
-        return jdbDriverClassName;
+    public String getJdbcDriverClassName() {
+        return jdbcDriverClassName;
     }
 
     @ModuleOption("jdbc driver classname")
-    public void setJdbDriverClassName(String jdbDriverClassName) {
-        this.jdbDriverClassName = jdbDriverClassName;
+    public void setJdbcDriverClassName(String jdbcDriverClassName) {
+        this.jdbcDriverClassName = jdbcDriverClassName;
     }
 }
