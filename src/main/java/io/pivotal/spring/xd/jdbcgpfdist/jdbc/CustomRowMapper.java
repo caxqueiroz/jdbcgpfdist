@@ -19,10 +19,11 @@ public class CustomRowMapper implements RowMapper<String> {
 
     private String columnDelimiter;
 
+    private final StringBuilder sb = new StringBuilder();
 
     @Override
     public String mapRow(ResultSet resultSet, int i) throws SQLException {
-        StringBuilder sb = new StringBuilder();
+
         int columnsCount = resultSet.getMetaData().getColumnCount();
 
         for(int j = 1; j < columnsCount;j++){
@@ -31,16 +32,25 @@ public class CustomRowMapper implements RowMapper<String> {
         }
 
         String row = sb.append(resultSet.getObject(columnsCount)).toString();
+
         log.debug(row);
+
+        resetSB();
+
         return row;
     }
 
-    public String getColumnDelimiter() {
-        return columnDelimiter;
+    private void resetSB() {
+        sb.setLength(0);
+        sb.trimToSize();
     }
 
     @Autowired
     public void setColumnDelimiter(String columnDelimiter) {
         this.columnDelimiter = columnDelimiter;
+    }
+
+    public String getColumnDelimiter() {
+        return columnDelimiter;
     }
 }
