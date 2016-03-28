@@ -52,9 +52,14 @@ public class JDBCGPFDISTOptionsMetadata {
     private String sqlQuery;
 
     private String jdbcUsername;
+
     private String jdbcPassword;
+
     private String jdbcUrl;
+
     private String jdbcDriverClassName;
+
+    private int commitInterval;
 
 
     public int getPort() {
@@ -289,5 +294,14 @@ public class JDBCGPFDISTOptionsMetadata {
     @ModuleOption("jdbc driver classname")
     public void setJdbcDriverClassName(String jdbcDriverClassName) {
         this.jdbcDriverClassName = jdbcDriverClassName;
+    }
+
+    public int getCommitInterval() {
+        return commitInterval;
+    }
+
+    @ModuleOption("commit interval")
+    public void setCommitInterval(int commitInterval) {
+        this.commitInterval = commitInterval;
     }
 }

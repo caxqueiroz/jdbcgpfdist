@@ -31,7 +31,7 @@ public class CustomRowMapper implements RowMapper<String> {
         }
 
         String row = sb.append(resultSet.getObject(columnsCount)).toString();
-        log.info(row);
+        log.debug(row);
         return row;
     }
 

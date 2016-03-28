@@ -94,8 +94,7 @@ public class GPFDistMessageHandler extends AbstractGPFDistMessageHandler {
             if (meter != null) {
                 if ((meterCount++ % rateInterval) == 0) {
                     meter.mark(rateInterval);
-                    log.info("METER: 1 minute rate = " + meter.getOneMinuteRate() + " mean rate = "
-                            + meter.getMeanRate());
+                    log.info("METER: 1 minute rate = " + meter.getOneMinuteRate() + " mean rate = " + meter.getMeanRate());
                 }
             }
         }
@@ -129,27 +128,23 @@ public class GPFDistMessageHandler extends AbstractGPFDistMessageHandler {
             final RuntimeContext context = new RuntimeContext();
             context.addLocation(NetworkUtils.getGPFDistUri(gpfdistServer.getLocalPort()));
 
-            sqlTaskScheduler.schedule((new FutureTask<Void>(new Runnable() {
-
-                @Override
-                public void run() {
-                    boolean taskValue = true;
-                    try {
-                        while (!taskFuture.interrupted) {
-                            try {
-                                greenplumLoad.load(context);
-                            }
-                            catch (Exception e) {
-                                log.error("Error in load", e);
-                            }
-                            Thread.sleep(batchPeriod * 1000);
+            sqlTaskScheduler.schedule((new FutureTask<Void>(() -> {
+                boolean taskValue = true;
+                try {
+                    while (!taskFuture.interrupted) {
+                        try {
+                            greenplumLoad.load(context);
                         }
+                        catch (Exception e) {
+                            log.error("Error in load", e);
+                        }
+                        Thread.sleep(batchPeriod * 1000);
                     }
-                    catch (Exception e) {
-                        taskValue = false;
-                    }
-                    taskFuture.set(taskValue);
                 }
+                catch (Exception e) {
+                    taskValue = false;
+                }
+                taskFuture.set(taskValue);
             }, null)), new Date());
 
         }

@@ -80,7 +80,7 @@
     <batch:job id="job">
         <batch:step id="loadData">
             <batch:tasklet>
-                <batch:chunk reader="itemReader" writer="itemWriter" commit-interval="1" retry-limit="1">
+                <batch:chunk reader="itemReader" writer="itemWriter" commit-interval="${commitInterval:10}" retry-limit="1">
                     <batch:retryable-exception-classes>
                         <batch:include class="org.springframework.batch.item.ItemReaderException"/>
                     </batch:retryable-exception-classes>

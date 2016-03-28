@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.support.GenericMessage;
+import org.springframework.messaging.support.MessageBuilder;
 
 import java.util.List;
 
@@ -28,9 +28,7 @@ public class GPFDistItemWriter implements ItemWriter<String>{
     @Override
     public void write(List<? extends String> list) throws Exception {
 
-        logger.info("processing list of messages with size: " + list.size());
-
-        list.stream().forEach(m -> messageHandler.handleMessage(new GenericMessage<>(m)));
+        list.stream().forEach(m -> messageHandler.handleMessage(MessageBuilder.withPayload(m).build()));
 
     }
 
