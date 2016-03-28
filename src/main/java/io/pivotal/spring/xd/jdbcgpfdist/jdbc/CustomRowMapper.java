@@ -25,12 +25,12 @@ public class CustomRowMapper implements RowMapper<String> {
         StringBuilder sb = new StringBuilder();
         int columnsCount = resultSet.getMetaData().getColumnCount();
 
-        for(int j = 1; j <= columnsCount;j++){
-            sb.append(columnDelimiter);
+        for(int j = 1; j < columnsCount;j++){
             sb.append(resultSet.getObject(j));
+            sb.append(columnDelimiter);
         }
 
-        String row = sb.append("\n").toString();
+        String row = sb.append(resultSet.getObject(columnsCount)).append("\n").toString();
         log.info(row);
         return row;
     }
