@@ -30,7 +30,7 @@ public class CustomRowMapper implements RowMapper<String> {
             sb.append(columnDelimiter);
         }
 
-        String row = sb.append(resultSet.getObject(columnsCount)).append("\n").toString();
+        String row = sb.append(resultSet.getObject(columnsCount)).append("\t").toString();
         log.info(row);
         return row;
     }
