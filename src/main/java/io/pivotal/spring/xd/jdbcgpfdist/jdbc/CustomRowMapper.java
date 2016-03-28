@@ -3,6 +3,7 @@ package io.pivotal.spring.xd.jdbcgpfdist.jdbc;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.integration.support.MessageBuilder;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
@@ -24,12 +25,12 @@ public class CustomRowMapper implements RowMapper<String> {
         StringBuilder sb = new StringBuilder();
         int columnsCount = resultSet.getMetaData().getColumnCount();
 
-        for(int j = 1; j < columnsCount;j++){
+        for(int j = 1; j <= columnsCount;j++){
             sb.append(columnDelimiter);
             sb.append(resultSet.getObject(j));
         }
 
-        String row = sb.append(resultSet.getObject(columnsCount)).append("\n").toString();
+        String row = sb.toString();
         log.info(row);
         return row;
     }
