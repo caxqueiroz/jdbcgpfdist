@@ -25,8 +25,8 @@ public class CustomRowMapper implements RowMapper<String> {
         int columnsCount = resultSet.getMetaData().getColumnCount();
 
         for(int j = 1; j < columnsCount;j++){
-            sb.append(resultSet.getObject(j));
             sb.append(columnDelimiter);
+            sb.append(resultSet.getObject(j));
         }
 
         String row = sb.append(resultSet.getObject(columnsCount)).append("\n").toString();
