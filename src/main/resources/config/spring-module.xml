@@ -7,13 +7,6 @@
 		http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <context:annotation-config/>
-
-
-    <bean class="io.pivotal.spring.xd.jdbcgpfdist.config.Config">
-        <property name="jdbcDataSource" ref="jdbcDataSource"/>
-    </bean>
-
     <bean id="sqlTaskScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
         <property name="waitForTasksToCompleteOnShutdown" value="true" />
         <property name="awaitTerminationSeconds" value="${batchTimeout}" />
@@ -55,7 +48,7 @@
         <property name="dbPort" value="${dbPort}" />
     </bean>
 
-    <bean id="gpfdist" class="io.pivotal.spring.xd.jdbcgpfdist.gpfdist.GPFDistMessageHandler">
+    <bean id="gpfdist" class="io.pivotal.spring.xd.jdbcgpfdist.GPFDistMessageHandler">
         <constructor-arg value="${port}"/>
         <constructor-arg value="${flushCount}"/>
         <constructor-arg value="${flushTime}"/>
@@ -93,7 +86,7 @@
         <property name="dataSource" ref="jdbcDataSource"/>
         <property name="sql" value="${sqlQuery}"/>
         <property name="rowMapper">
-            <bean class="io.pivotal.spring.xd.jdbcgpfdist.jdbc.CustomRowMapper">
+            <bean class="io.pivotal.spring.xd.jdbcgpfdist.CustomRowMapper">
                 <property name="columnDelimiter" value="${columnDelimiter}"/>
             </bean>
         </property>
@@ -104,5 +97,8 @@
         <constructor-arg value="gpfdist"/>
     </bean>
 
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <constructor-arg ref="jdbcDataSource"/>
+    </bean>
 
 </beans>

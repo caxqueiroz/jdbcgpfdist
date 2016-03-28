@@ -1,4 +1,4 @@
-package io.pivotal.spring.xd.jdbcgpfdist.config;
+package io.pivotal.spring.xd.jdbcgpfdist;
 
 import org.springframework.xd.module.options.spi.ModuleOption;
 

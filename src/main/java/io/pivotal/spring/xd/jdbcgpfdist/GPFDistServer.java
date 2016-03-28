@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package io.pivotal.spring.xd.jdbcgpfdist.gpfdist;
+package io.pivotal.spring.xd.jdbcgpfdist;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.reactivestreams.Processor;
 import org.reactivestreams.Publisher;
+import org.springframework.xd.greenplum.gpfdist.GPFDistCodec;
 import reactor.core.processor.RingBufferWorkProcessor;
 import reactor.fn.Function;
 import reactor.io.buffer.Buffer;
@@ -86,7 +87,7 @@ public class GPFDistServer {
                 .wrap(processor)
                 .window(flushCount, flushTime, TimeUnit.SECONDS)
                 .flatMap((Function<Stream<Buffer>, Publisher<Buffer>>) t -> t.reduce(new Buffer(), (prev, next) -> prev.append(next)))
-                .process(RingBufferWorkProcessor.<Buffer>create("gpfdist-job-worker", 8192, false));
+                .process(RingBufferWorkProcessor.create("gpfdist-job-worker", 8192, false));
 
         HttpServer<Buffer, Buffer> httpServer = NetStreams
                 .httpServer(new Function<HttpServerSpec<Buffer, Buffer>, HttpServerSpec<Buffer, Buffer>>() {
@@ -110,7 +111,7 @@ public class GPFDistServer {
 
             return request.writeWith(stream
                     .take(batchCount)
-                    .timeout(batchTimeout, TimeUnit.SECONDS, Streams.<Buffer>empty())
+                    .timeout(batchTimeout, TimeUnit.SECONDS, Streams.empty())
                     .concatWith(Streams.just(Buffer.wrap(new byte[0]))))
                     .capacity(1l);
         });

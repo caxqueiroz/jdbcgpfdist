@@ -1,9 +1,8 @@
-package io.pivotal.spring.xd.jdbcgpfdist.jdbc;
+package io.pivotal.spring.xd.jdbcgpfdist;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.integration.support.MessageBuilder;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;

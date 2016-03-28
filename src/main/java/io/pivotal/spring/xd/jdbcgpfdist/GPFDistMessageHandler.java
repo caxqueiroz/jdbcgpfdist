@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.pivotal.spring.xd.jdbcgpfdist.gpfdist;
+package io.pivotal.spring.xd.jdbcgpfdist;
 
 import com.codahale.metrics.Meter;
 import org.apache.commons.logging.Log;
@@ -23,6 +23,7 @@ import org.springframework.messaging.MessageHandlingException;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.util.StringUtils;
 import org.springframework.util.concurrent.SettableListenableFuture;
+import org.springframework.xd.greenplum.gpfdist.AbstractGPFDistMessageHandler;
 import org.springframework.xd.greenplum.support.GreenplumLoad;
 import org.springframework.xd.greenplum.support.NetworkUtils;
 import org.springframework.xd.greenplum.support.RuntimeContext;
