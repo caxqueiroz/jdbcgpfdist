@@ -90,7 +90,7 @@ public class GPFDistMessageHandler extends AbstractGPFDistMessageHandler {
             String data = (String)payload;
             log.info("data:"  + data);
             if (delimiter != null) {
-                processor.onNext(Buffer.wrap(data));
+                processor.onNext(Buffer.wrap(data+delimiter));
             } else {
                 processor.onNext(Buffer.wrap(data));
             }
