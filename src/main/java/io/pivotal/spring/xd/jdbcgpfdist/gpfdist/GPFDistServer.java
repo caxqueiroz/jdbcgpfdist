@@ -21,13 +21,10 @@ import org.apache.commons.logging.LogFactory;
 import org.reactivestreams.Processor;
 import org.reactivestreams.Publisher;
 import reactor.core.processor.RingBufferWorkProcessor;
-import reactor.fn.BiFunction;
 import reactor.fn.Function;
 import reactor.io.buffer.Buffer;
 import reactor.io.net.NetStreams;
-import reactor.io.net.ReactorChannelHandler;
 import reactor.io.net.Spec.HttpServerSpec;
-import reactor.io.net.http.HttpChannel;
 import reactor.io.net.http.HttpServer;
 import reactor.rx.Stream;
 import reactor.rx.Streams;
@@ -88,20 +85,7 @@ public class GPFDistServer {
         final Stream<Buffer> stream = Streams
                 .wrap(processor)
                 .window(flushCount, flushTime, TimeUnit.SECONDS)
-                .flatMap(new Function<Stream<Buffer>, Publisher<Buffer>>() {
-
-                    @Override
-                    public Publisher<Buffer> apply(Stream<Buffer> t) {
-
-                        return t.reduce(new Buffer(), new BiFunction<Buffer, Buffer, Buffer>() {
-
-                            @Override
-                            public Buffer apply(Buffer prev, Buffer next) {
-                                return prev.append(next);
-                            }
-                        });
-                    }
-                })
+                .flatMap((Function<Stream<Buffer>, Publisher<Buffer>>) t -> t.reduce(new Buffer(), (prev, next) -> prev.append(next)))
                 .process(RingBufferWorkProcessor.<Buffer>create("gpfdist-job-worker", 8192, false));
 
         HttpServer<Buffer, Buffer> httpServer = NetStreams
@@ -115,24 +99,20 @@ public class GPFDistServer {
                     }
                 });
 
-        httpServer.get("/data", new ReactorChannelHandler<Buffer, Buffer, HttpChannel<Buffer,Buffer>>() {
+        httpServer.get("/data", request -> {
+            request.responseHeaders().removeTransferEncodingChunked();
+            request.addResponseHeader("Content-type", "text/plain");
+            request.addResponseHeader("Expires", "0");
+            request.addResponseHeader("X-GPFDIST-VERSION", "Spring XD");
+            request.addResponseHeader("X-GP-PROTO", "1");
+            request.addResponseHeader("Cache-Control", "no-cache");
+            request.addResponseHeader("Connection", "close");
 
-            @Override
-            public Publisher<Void> apply(HttpChannel<Buffer, Buffer> request) {
-                request.responseHeaders().removeTransferEncodingChunked();
-                request.addResponseHeader("Content-type", "text/plain");
-                request.addResponseHeader("Expires", "0");
-                request.addResponseHeader("X-GPFDIST-VERSION", "Spring XD");
-                request.addResponseHeader("X-GP-PROTO", "1");
-                request.addResponseHeader("Cache-Control", "no-cache");
-                request.addResponseHeader("Connection", "close");
-
-                return request.writeWith(stream
-                        .take(batchCount)
-                        .timeout(batchTimeout, TimeUnit.SECONDS, Streams.<Buffer>empty())
-                        .concatWith(Streams.just(Buffer.wrap(new byte[0]))))
-                        .capacity(1l);
-            }
+            return request.writeWith(stream
+                    .take(batchCount)
+                    .timeout(batchTimeout, TimeUnit.SECONDS, Streams.<Buffer>empty())
+                    .concatWith(Streams.just(Buffer.wrap(new byte[0]))))
+                    .capacity(1l);
         });
 
         httpServer.start().awaitSuccess();
