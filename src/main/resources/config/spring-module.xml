@@ -93,7 +93,9 @@
         <property name="dataSource" ref="jdbcDataSource"/>
         <property name="sql" value="${sqlQuery}"/>
         <property name="rowMapper">
-            <bean class="io.pivotal.spring.xd.jdbcgpfdist.jdbc.CustomRowMapper"/>
+            <bean class="io.pivotal.spring.xd.jdbcgpfdist.jdbc.CustomRowMapper">
+                <property name="columnDelimiter" value="${columnDelimiter}"/>
+            </bean>
         </property>
 
     </bean>
