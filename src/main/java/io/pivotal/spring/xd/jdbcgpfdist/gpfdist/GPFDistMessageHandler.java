@@ -85,8 +85,10 @@ public class GPFDistMessageHandler extends AbstractGPFDistMessageHandler {
     @Override
     protected void doWrite(Message<?> message) throws Exception {
         Object payload = message.getPayload();
+
         if (payload instanceof String) {
             String data = (String)payload;
+            log.info("data:"  + data);
             if (delimiter != null) {
                 processor.onNext(Buffer.wrap(data+delimiter));
             } else {
@@ -108,6 +110,7 @@ public class GPFDistMessageHandler extends AbstractGPFDistMessageHandler {
         super.onInit();
         Environment.initializeIfEmpty().assignErrorJournal();
         processor = RingBufferProcessor.create(false);
+        log.info("onInit called!!");
     }
 
     @Override
@@ -127,24 +130,21 @@ public class GPFDistMessageHandler extends AbstractGPFDistMessageHandler {
             final RuntimeContext context = new RuntimeContext();
             context.addLocation(NetworkUtils.getGPFDistUri(gpfdistServer.getLocalPort()));
 
-            sqlTaskScheduler.schedule((new FutureTask<Void>(new Runnable() {
-                @Override
-                public void run() {
-                    boolean taskValue = true;
-                    try {
-                        while(!taskFuture.interrupted) {
-                            try {
-                                greenplumLoad.load(context);
-                            } catch (Exception e) {
-                                log.error("Error in load", e);
-                            }
-                            Thread.sleep(batchPeriod*1000);
+            sqlTaskScheduler.schedule((new FutureTask<Void>(() -> {
+                boolean taskValue = true;
+                try {
+                    while(!taskFuture.interrupted) {
+                        try {
+                            greenplumLoad.load(context);
+                        } catch (Exception e) {
+                            log.error("Error in load", e);
                         }
-                    } catch (Exception e) {
-                        taskValue = false;
+                        Thread.sleep(batchPeriod*1000);
                     }
-                    taskFuture.set(taskValue);
+                } catch (Exception e) {
+                    taskValue = false;
                 }
+                taskFuture.set(taskValue);
             }, null)), new Date());
 
         } else {

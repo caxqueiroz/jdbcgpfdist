@@ -3,8 +3,7 @@
        xmlns:batch="http://www.springframework.org/schema/batch"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
@@ -22,7 +21,7 @@
 
 
     <bean id="greenplumControlFile" class="org.springframework.xd.greenplum.support.ControlFileFactoryBean">
-        <property name="controlFileResource" value="${controlFile:#{null}}" />
+        <property name="controlFileResource" value="${controlFile:}" />
     </bean>
 
     <bean id="greenplumLoad" class="org.springframework.xd.greenplum.support.LoadFactoryBean">
@@ -33,17 +32,17 @@
     <bean id="greenplumLoadConfiguration" class="org.springframework.xd.greenplum.support.LoadConfigurationFactoryBean">
         <property name="externalTable" ref="greenplumReadableTable" />
         <property name="controlFile" ref="greenplumControlFile" />
-        <property name="mode" value="${mode:#{INSERT}}" />
-        <property name="updateColumns" value="${updateColumns:#{null}}" />
-        <property name="matchColumns" value="${matchColumns:#{null}}" />
-        <property name="table" value="${table:#{null}}" />
-        <property name="sqlBefore" value="${sqlBefore:#{null}}" />
-        <property name="sqlAfter" value="${sqlAfter:#{null}}" />
+        <property name="mode" value="${mode:INSERT}" />
+        <property name="updateColumns" value="${updateColumns:}" />
+        <property name="matchColumns" value="${matchColumns:}" />
+        <property name="table" value="${table:}" />
+        <property name="sqlBefore" value="${sqlBefore:}" />
+        <property name="sqlAfter" value="${sqlAfter:}" />
     </bean>
 
     <bean id="greenplumReadableTable" class="org.springframework.xd.greenplum.support.ReadableTableFactoryBean">
         <property name="controlFile" ref="greenplumControlFile" />
-        <property name="delimiter" value="${columnDelimiter:#{null}}" />
+        <property name="delimiter" value="${columnDelimiter:}" />
         <property name="locations" value="#{T(org.springframework.xd.greenplum.support.NetworkUtils).getGPFDistUri(${port})}" />
     </bean>
 
@@ -81,7 +80,7 @@
     <batch:job id="job">
         <batch:step id="loadData">
             <batch:tasklet>
-                <batch:chunk reader="itemReader" writer="itemWriter" commit-interval="8" retry-limit="1">
+                <batch:chunk reader="itemReader" writer="itemWriter" commit-interval="1" retry-limit="1">
                     <batch:retryable-exception-classes>
                         <batch:include class="org.springframework.batch.item.ItemReaderException"/>
                     </batch:retryable-exception-classes>
@@ -90,7 +89,7 @@
         </batch:step>
     </batch:job>
 
-    <bean id="itemReader" class="org.springframework.batch.item.database.JdbcCursorItemReader" scope="step">
+    <bean id="itemReader" class="org.springframework.batch.item.database.JdbcCursorItemReader">
         <property name="dataSource" ref="jdbcDataSource"/>
         <property name="sql" value="${sqlQuery}"/>
         <property name="rowMapper">
@@ -99,7 +98,7 @@
 
     </bean>
 
-    <bean id="itemWriter" class="io.pivotal.spring.xd.jdbcgpfdist.GPFDistItemWriter" scope="step">
+    <bean id="itemWriter" class="io.pivotal.spring.xd.jdbcgpfdist.GPFDistItemWriter">
         <constructor-arg value="gpfdist"/>
     </bean>
 

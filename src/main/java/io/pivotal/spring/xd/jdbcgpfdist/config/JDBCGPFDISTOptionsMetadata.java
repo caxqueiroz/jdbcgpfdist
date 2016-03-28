@@ -250,7 +250,7 @@ public class JDBCGPFDISTOptionsMetadata {
         return sqlQuery;
     }
 
-    @ModuleOption("jdbc query")
+    @ModuleOption("jdbc sqlQuery")
     public void setSqlQuery(String sqlQuery) {
         this.sqlQuery = sqlQuery;
     }
