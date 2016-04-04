@@ -31,8 +31,7 @@ public class LoadConfigurationFactoryBeanTests {
 
 	@Test
 	public void testListValuesToColumns() {
-		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
-				"io/pivotal/spring/xd/jdbcgpfdist/support/LoadConfigurationFactoryBeanTests1.xml");
+		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("LoadConfigurationFactoryBeanTests1.xml");
 		LoadConfigurationFactoryBean factoryBean = context.getBean("&greenplumLoadConfiguration",
 				LoadConfigurationFactoryBean.class);
 		assertThat(factoryBean.getUpdateColumns().size(), is(2));
