@@ -1,9 +1,9 @@
 package io.pivotal.spring.xd.jdbcgpfdist;
 
+import io.pivotal.spring.xd.jdbcgpfdist.support.AbstractGPFDistMessageHandler;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.xd.greenplum.gpfdist.AbstractGPFDistMessageHandler;
 
 import java.util.List;
 

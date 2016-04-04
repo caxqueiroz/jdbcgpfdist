@@ -61,6 +61,8 @@ public class JDBCGPFDISTOptionsMetadata {
 
     private int commitInterval;
 
+    private boolean header = false;
+
 
     public int getPort() {
         return port;
@@ -303,5 +305,14 @@ public class JDBCGPFDISTOptionsMetadata {
     @ModuleOption("commit interval")
     public void setCommitInterval(int commitInterval) {
         this.commitInterval = commitInterval;
+    }
+
+    public boolean isHeader() {
+        return header;
+    }
+
+    @ModuleOption("header ")
+    public void setHeader(boolean header) {
+        this.header = header;
     }
 }

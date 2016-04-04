@@ -16,6 +16,10 @@
 package io.pivotal.spring.xd.jdbcgpfdist;
 
 import com.codahale.metrics.Meter;
+import io.pivotal.spring.xd.jdbcgpfdist.support.AbstractGPFDistMessageHandler;
+import io.pivotal.spring.xd.jdbcgpfdist.support.GreenplumLoad;
+import io.pivotal.spring.xd.jdbcgpfdist.support.NetworkUtils;
+import io.pivotal.spring.xd.jdbcgpfdist.support.RuntimeContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.messaging.Message;
@@ -23,10 +27,6 @@ import org.springframework.messaging.MessageHandlingException;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.util.StringUtils;
 import org.springframework.util.concurrent.SettableListenableFuture;
-import org.springframework.xd.greenplum.gpfdist.AbstractGPFDistMessageHandler;
-import org.springframework.xd.greenplum.support.GreenplumLoad;
-import org.springframework.xd.greenplum.support.NetworkUtils;
-import org.springframework.xd.greenplum.support.RuntimeContext;
 import reactor.Environment;
 import reactor.core.processor.RingBufferProcessor;
 import reactor.io.buffer.Buffer;
@@ -108,12 +108,15 @@ public class GPFDistMessageHandler extends AbstractGPFDistMessageHandler {
     protected void onInit() throws Exception {
         super.onInit();
         Environment.initializeIfEmpty().assignErrorJournal();
-        processor = RingBufferProcessor.create(false);
+
+        log.info("onInit get called!!");
     }
 
     @Override
     protected void doStart() {
         try {
+
+            processor = RingBufferProcessor.create(false);
             log.info("Creating gpfdist protocol listener on port=" + port);
             gpfdistServer = new GPFDistServer(processor, port, flushCount, flushTime, batchTimeout, batchCount);
             gpfdistServer.start();

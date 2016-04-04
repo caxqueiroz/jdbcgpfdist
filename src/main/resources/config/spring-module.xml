@@ -13,16 +13,16 @@
     </bean>
 
 
-    <bean id="greenplumControlFile" class="org.springframework.xd.greenplum.support.ControlFileFactoryBean">
+    <bean id="greenplumControlFile" class="io.pivotal.spring.xd.jdbcgpfdist.support.ControlFileFactoryBean">
         <property name="controlFileResource" value="${controlFile:}" />
     </bean>
 
-    <bean id="greenplumLoad" class="org.springframework.xd.greenplum.support.LoadFactoryBean">
+    <bean id="greenplumLoad" class="io.pivotal.spring.xd.jdbcgpfdist.support.LoadFactoryBean">
         <property name="loadConfiguration" ref="greenplumLoadConfiguration" />
         <property name="dataSource" ref="gpdbDataSource" />
     </bean>
 
-    <bean id="greenplumLoadConfiguration" class="org.springframework.xd.greenplum.support.LoadConfigurationFactoryBean">
+    <bean id="greenplumLoadConfiguration" class="io.pivotal.spring.xd.jdbcgpfdist.support.LoadConfigurationFactoryBean">
         <property name="externalTable" ref="greenplumReadableTable" />
         <property name="controlFile" ref="greenplumControlFile" />
         <property name="mode" value="${mode:INSERT}" />
@@ -33,13 +33,14 @@
         <property name="sqlAfter" value="${sqlAfter:}" />
     </bean>
 
-    <bean id="greenplumReadableTable" class="org.springframework.xd.greenplum.support.ReadableTableFactoryBean">
+    <bean id="greenplumReadableTable" class="io.pivotal.spring.xd.jdbcgpfdist.support.ReadableTableFactoryBean">
         <property name="controlFile" ref="greenplumControlFile" />
         <property name="delimiter" value="${columnDelimiter:}" />
-        <property name="locations" value="#{T(org.springframework.xd.greenplum.support.NetworkUtils).getGPFDistUri(${port})}" />
+        <property name="header" value="${header:}" />
+        <property name="locations" value="#{T(io.pivotal.spring.xd.jdbcgpfdist.support.NetworkUtils).getGPFDistUri(${port})}" />
     </bean>
 
-    <bean id="gpdbDataSource" class="org.springframework.xd.greenplum.support.GreenplumDataSourceFactoryBean">
+    <bean id="gpdbDataSource" class="io.pivotal.spring.xd.jdbcgpfdist.support.GreenplumDataSourceFactoryBean">
         <property name="controlFile" ref="greenplumControlFile" />
         <property name="dbHost" value="${dbHost}" />
         <property name="dbName" value="${dbName}" />
@@ -70,7 +71,7 @@
         <property name="password" value="${jdbcPassword}" />
     </bean>
 
-    <batch:job id="job">
+    <batch:job id="job-load-data">
         <batch:step id="loadData">
             <batch:tasklet>
                 <batch:chunk reader="itemReader" writer="itemWriter" commit-interval="${commitInterval:10}" retry-limit="1">
@@ -97,14 +98,14 @@
     </bean>
 
     <bean id="itemWriter" class="io.pivotal.spring.xd.jdbcgpfdist.GPFDistItemWriter">
-        <constructor-arg value="gpfdist"/>
+        <constructor-arg ref="gpfdist"/>
     </bean>
 
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
         <constructor-arg ref="jdbcDataSource"/>
     </bean>
 
-    <bean id="stepJobListener" class="io.pivotal.spring.xd.jdbcgpfdist.JobExecutionListener">
+    <bean id="stepJobListener" class="io.pivotal.spring.xd.jdbcgpfdist.JDBCGPFDISTExecutionListener">
         <constructor-arg ref="gpfdist"/>
     </bean>
 

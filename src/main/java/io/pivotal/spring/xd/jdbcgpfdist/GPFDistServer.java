@@ -16,11 +16,11 @@
 
 package io.pivotal.spring.xd.jdbcgpfdist;
 
+import io.pivotal.spring.xd.jdbcgpfdist.support.GPFDistCodec;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.reactivestreams.Processor;
 import org.reactivestreams.Publisher;
-import org.springframework.xd.greenplum.gpfdist.GPFDistCodec;
 import reactor.core.processor.RingBufferWorkProcessor;
 import reactor.fn.Function;
 import reactor.io.buffer.Buffer;
