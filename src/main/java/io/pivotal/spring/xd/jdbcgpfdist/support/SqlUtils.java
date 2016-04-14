@@ -23,8 +23,7 @@ import java.util.List;
 
 public abstract class SqlUtils {
 
-	public static String createExternalReadableTable(LoadConfiguration config, String prefix,
-													 List<String> overrideLocations) {
+	public static String createExternalReadableTable(LoadConfiguration config, String prefix, List<String> overrideLocations) {
 
 		// TODO: this function needs a cleanup
 		StringBuilder buf = new StringBuilder();

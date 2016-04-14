@@ -63,6 +63,12 @@ public class JDBCGPFDISTOptionsMetadata {
 
     private boolean header = false;
 
+    private String nullString="";
+
+    private String logErrorsInto;
+
+    private int segmentRejectLimit=0;
+
 
     public int getPort() {
         return port;
@@ -314,5 +320,31 @@ public class JDBCGPFDISTOptionsMetadata {
     @ModuleOption("header ")
     public void setHeader(boolean header) {
         this.header = header;
+    }
+
+    public String getNullString() {
+        return nullString;
+    }
+
+    @ModuleOption("nullString ")
+    public void setNullString(String nullString) {
+        this.nullString = nullString;
+    }
+
+    public String getLogErrorsInto() {
+        return logErrorsInto;
+    }
+
+    @ModuleOption("logErorsInto ")
+    public void setLogErrorsInto(String logErrorsInto) {
+        this.logErrorsInto = logErrorsInto;
+    }
+
+    public int getSegmentRejectLimit() {
+        return segmentRejectLimit;
+    }
+
+    public void setSegmentRejectLimit(int segmentRejectLimit) {
+        this.segmentRejectLimit = segmentRejectLimit;
     }
 }
