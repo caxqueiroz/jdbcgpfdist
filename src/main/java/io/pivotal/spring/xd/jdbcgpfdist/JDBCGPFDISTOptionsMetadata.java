@@ -344,6 +344,7 @@ public class JDBCGPFDISTOptionsMetadata {
         return segmentRejectLimit;
     }
 
+    @ModuleOption("segmentRejectLimit ")
     public void setSegmentRejectLimit(int segmentRejectLimit) {
         this.segmentRejectLimit = segmentRejectLimit;
     }
