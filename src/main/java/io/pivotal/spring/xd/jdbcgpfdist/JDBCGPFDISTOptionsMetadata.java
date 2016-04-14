@@ -49,6 +49,18 @@ public class JDBCGPFDISTOptionsMetadata {
 
     private String sqlAfter;
 
+    private String sqlQuery;
+
+    private String jdbcUsername;
+
+    private String jdbcPassword;
+
+    private String jdbcUrl;
+
+    private String jdbcDriverClassName;
+
+    private int commitInterval;
+
     private String nullString;
 
     private String logErrorsInto;
@@ -281,5 +293,59 @@ public class JDBCGPFDISTOptionsMetadata {
 
     public boolean isHeader(){
         return this.header;
+    }
+
+    public String getSqlQuery() {
+        return sqlQuery;
+    }
+
+    @ModuleOption("sqlQuery ")
+    public void setSqlQuery(String sqlQuery) {
+        this.sqlQuery = sqlQuery;
+    }
+
+    public String getJdbcUsername() {
+        return jdbcUsername;
+    }
+
+    @ModuleOption("jdbc username ")
+    public void setJdbcUsername(String jdbcUsername) {
+        this.jdbcUsername = jdbcUsername;
+    }
+
+    public String getJdbcPassword() {
+        return jdbcPassword;
+    }
+
+    @ModuleOption("jdbc password ")
+    public void setJdbcPassword(String jdbcPassword) {
+        this.jdbcPassword = jdbcPassword;
+    }
+
+    public String getJdbcUrl() {
+        return jdbcUrl;
+    }
+
+    @ModuleOption("jdbc url ")
+    public void setJdbcUrl(String jdbcUrl) {
+        this.jdbcUrl = jdbcUrl;
+    }
+
+    public String getJdbcDriverClassName() {
+        return jdbcDriverClassName;
+    }
+
+    @ModuleOption("jdbc driver classname ")
+    public void setJdbcDriverClassName(String jdbcDriverClassName) {
+        this.jdbcDriverClassName = jdbcDriverClassName;
+    }
+
+    public int getCommitInterval() {
+        return commitInterval;
+    }
+
+    @ModuleOption("commit interval ")
+    public void setCommitInterval(int commitInterval) {
+        this.commitInterval = commitInterval;
     }
 }
