@@ -218,7 +218,7 @@ public class JDBCGPFDISTOptionsMetadata {
         return nullString;
     }
 
-    @ModuleOption("null")
+    @ModuleOption("nullString ")
     public void setNullString(String nullString) {
         this.nullString = nullString;
     }

@@ -78,6 +78,8 @@ public class ReadableTableFactoryBean implements FactoryBean<ReadableTable>, Ini
 		w.setSegmentRejectLimit(segmentRejectLimit);
 		w.setSegmentRejectType(segmentRejectType);
         w.setFormatHeader(header);
+		w.setNullString(nullString);
+
 
 		if (format == Format.TEXT) {
 			Character delim = delimiter != null ? delimiter : Character.valueOf('\t');
