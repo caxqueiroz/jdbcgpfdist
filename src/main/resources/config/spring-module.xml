@@ -82,9 +82,9 @@
                         <batch:include class="org.springframework.batch.item.ItemReaderException"/>
                     </batch:retryable-exception-classes>
                 </batch:chunk>
-                <batch:listeners>
-                    <batch:listener ref="stepJobListener"/>
-                </batch:listeners>
+                <!--<batch:listeners>-->
+                    <!--<batch:listener ref="stepJobListener"/>-->
+                <!--</batch:listeners>-->
             </batch:tasklet>
         </batch:step>
     </batch:job>
@@ -108,8 +108,8 @@
         <constructor-arg ref="jdbcDataSource"/>
     </bean>
 
-    <bean id="stepJobListener" class="io.pivotal.spring.xd.jdbcgpfdist.JDBCGPFDISTExecutionListener">
-        <constructor-arg ref="gpfdist"/>
-    </bean>
+    <!--<bean id="stepJobListener" class="io.pivotal.spring.xd.jdbcgpfdist.JDBCGPFDISTExecutionListener">-->
+        <!--<constructor-arg ref="gpfdist"/>-->
+    <!--</bean>-->
 
 </beans>
