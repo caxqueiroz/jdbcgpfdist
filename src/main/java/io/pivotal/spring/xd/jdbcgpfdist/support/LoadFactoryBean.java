@@ -16,14 +16,15 @@
 
 package io.pivotal.spring.xd.jdbcgpfdist.support;
 
+import java.io.IOException;
+
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.Assert;
-
-import javax.sql.DataSource;
-import java.io.IOException;
 
 /**
  * FactoryBean for easy creation and configuration of {@link GreenplumLoad}

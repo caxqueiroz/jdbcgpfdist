@@ -16,11 +16,12 @@
 
 package io.pivotal.spring.xd.jdbcgpfdist.support;
 
+import javax.sql.DataSource;
+
 import org.apache.commons.dbcp.BasicDataSource;
+
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.util.StringUtils;
-
-import javax.sql.DataSource;
 
 /**
  * Factory bean for configuring a {@link DataSource}. Needed to use

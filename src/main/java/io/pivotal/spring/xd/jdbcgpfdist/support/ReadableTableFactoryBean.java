@@ -57,7 +57,7 @@ public class ReadableTableFactoryBean implements FactoryBean<ReadableTable>, Ini
 
 	private SegmentRejectType segmentRejectType;
 
-    private boolean header;
+	private boolean header;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -209,7 +209,6 @@ public class ReadableTableFactoryBean implements FactoryBean<ReadableTable>, Ini
 		this.format = format;
 	}
 
-
     public boolean isHeader() {
         return header;
     }
@@ -217,4 +216,5 @@ public class ReadableTableFactoryBean implements FactoryBean<ReadableTable>, Ini
     public void setHeader(boolean header) {
         this.header = header;
     }
+
 }

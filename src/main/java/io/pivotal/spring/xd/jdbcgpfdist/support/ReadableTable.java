@@ -15,8 +15,6 @@
  */
 package io.pivotal.spring.xd.jdbcgpfdist.support;
 
-
-
 /**
  * Settings for readable external table.
  *
@@ -33,6 +31,8 @@ public class ReadableTable extends AbstractExternalTable {
 
 	// [ROWS | PERCENT]
 	private SegmentRejectType segmentRejectType;
+
+
 
 	// FORMAT 'TEXT|CVS' [( [HEADER]
 	private boolean formatHeader;

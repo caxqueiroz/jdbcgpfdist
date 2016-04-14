@@ -49,17 +49,11 @@ public class JDBCGPFDISTOptionsMetadata {
 
     private String sqlAfter;
 
-    private String sqlQuery;
+    private String nullString;
 
-    private String jdbcUsername;
+    private String logErrorsInto;
 
-    private String jdbcPassword;
-
-    private String jdbcUrl;
-
-    private String jdbcDriverClassName;
-
-    private int commitInterval;
+    private int segmentRejectLimit=0;
 
     private boolean header = false;
 
@@ -71,6 +65,24 @@ public class JDBCGPFDISTOptionsMetadata {
     @ModuleOption("gpfdist listen port")
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public int getSegmentRejectLimit() {
+        return segmentRejectLimit;
+    }
+
+    @ModuleOption("Segment Reject Limit")
+    public void setSegmentRejectLimit(int segmentRejectLimit) {
+        this.segmentRejectLimit = segmentRejectLimit;
+    }
+
+    public String getLogErrorsInto() {
+        return logErrorsInto;
+    }
+
+    @ModuleOption("Error Table")
+    public void setLogErrorsInto(String logErrorsInto) {
+        this.logErrorsInto = logErrorsInto;
     }
 
     public int getFlushCount() {
@@ -190,6 +202,15 @@ public class JDBCGPFDISTOptionsMetadata {
         this.columnDelimiter = columnDelimiter;
     }
 
+    public String getNullString() {
+        return nullString;
+    }
+
+    @ModuleOption("null")
+    public void setNullString(String nullString) {
+        this.nullString = nullString;
+    }
+
     public String getMode() {
         return mode;
     }
@@ -253,66 +274,12 @@ public class JDBCGPFDISTOptionsMetadata {
         this.sqlAfter = sqlAfter;
     }
 
-    public String getSqlQuery() {
-        return sqlQuery;
-    }
-
-    @ModuleOption("jdbc sqlQuery")
-    public void setSqlQuery(String sqlQuery) {
-        this.sqlQuery = sqlQuery;
-    }
-
-    public String getJdbcUsername() {
-        return jdbcUsername;
-    }
-
-    @ModuleOption("jdbc username")
-    public void setJdbcUsername(String jdbcUsername) {
-        this.jdbcUsername = jdbcUsername;
-    }
-
-    public String getJdbcPassword() {
-        return jdbcPassword;
-    }
-
-    @ModuleOption("jdbc password")
-    public void setJdbcPassword(String jdbcPassword) {
-        this.jdbcPassword = jdbcPassword;
-    }
-
-    public String getJdbcUrl() {
-        return jdbcUrl;
-    }
-
-    @ModuleOption("jdbc uri")
-    public void setJdbcUrl(String jdbcUrl) {
-        this.jdbcUrl = jdbcUrl;
-    }
-
-    public String getJdbcDriverClassName() {
-        return jdbcDriverClassName;
-    }
-
-    @ModuleOption("jdbc driver classname")
-    public void setJdbcDriverClassName(String jdbcDriverClassName) {
-        this.jdbcDriverClassName = jdbcDriverClassName;
-    }
-
-    public int getCommitInterval() {
-        return commitInterval;
-    }
-
-    @ModuleOption("commit interval")
-    public void setCommitInterval(int commitInterval) {
-        this.commitInterval = commitInterval;
-    }
-
-    public boolean isHeader() {
-        return header;
-    }
-
     @ModuleOption("header ")
-    public void setHeader(boolean header) {
+    public void setHeader(boolean header){
         this.header = header;
+    }
+
+    public boolean isHeader(){
+        return this.header;
     }
 }

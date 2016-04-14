@@ -20,11 +20,10 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 
-
 public abstract class SqlUtils {
 
 	public static String createExternalReadableTable(LoadConfiguration config, String prefix,
-													 List<String> overrideLocations) {
+			List<String> overrideLocations) {
 
 		// TODO: this function needs a cleanup
 		StringBuilder buf = new StringBuilder();
@@ -103,7 +102,7 @@ public abstract class SqlUtils {
 		}
 
 		if(externalTable.isFormatHeader()){
-            buf.append(" HEADER ");
+			buf.append(" HEADER ");
 		}
 
 		buf.append(" )");
@@ -114,7 +113,7 @@ public abstract class SqlUtils {
 			buf.append("'");
 		}
 
-		if (externalTable.getSegmentRejectLimit() != null && externalTable.getSegmentRejectType() != null) {
+		if (externalTable.getSegmentRejectLimit() != null ) {
 			if (externalTable.getLogErrorsInto() != null) {
 				buf.append(" LOG ERRORS INTO ");
 				buf.append(externalTable.getLogErrorsInto());
@@ -122,7 +121,6 @@ public abstract class SqlUtils {
 			buf.append(" SEGMENT REJECT LIMIT ");
 			buf.append(externalTable.getSegmentRejectLimit());
 			buf.append(" ");
-			buf.append(externalTable.getSegmentRejectType());
 		}
 
 		return buf.toString();

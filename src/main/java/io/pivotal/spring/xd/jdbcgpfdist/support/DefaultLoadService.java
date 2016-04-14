@@ -16,11 +16,10 @@
 
 package io.pivotal.spring.xd.jdbcgpfdist.support;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.util.Assert;
-
 import java.util.UUID;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.util.Assert;
 
 public class DefaultLoadService implements LoadService {
 

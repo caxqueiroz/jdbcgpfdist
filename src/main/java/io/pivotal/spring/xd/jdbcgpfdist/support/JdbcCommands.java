@@ -16,13 +16,14 @@
 
 package io.pivotal.spring.xd.jdbcgpfdist.support;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.StringUtils;
-
-import java.util.List;
 
 /**
  * Utility class helping to execute jdbc operations within a load session.

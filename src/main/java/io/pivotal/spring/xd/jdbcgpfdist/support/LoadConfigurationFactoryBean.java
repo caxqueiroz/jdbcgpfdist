@@ -23,6 +23,7 @@ import org.springframework.util.StringUtils;
 import java.util.Arrays;
 import java.util.List;
 
+
 public class LoadConfigurationFactoryBean implements FactoryBean<LoadConfiguration>, InitializingBean {
 
 	private ControlFile controlFile;
