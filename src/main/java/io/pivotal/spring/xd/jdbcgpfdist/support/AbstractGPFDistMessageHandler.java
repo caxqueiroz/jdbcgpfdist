@@ -17,8 +17,6 @@ package io.pivotal.spring.xd.jdbcgpfdist.support;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.context.SmartLifecycle;
-import org.springframework.integration.handler.AbstractMessageHandler;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHandlingException;
 
@@ -29,29 +27,15 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @author Janne Valkealahti
  */
-public abstract class AbstractGPFDistMessageHandler extends AbstractMessageHandler implements SmartLifecycle {
+public abstract class AbstractGPFDistMessageHandler  {
 
 	private static final Log logger = LogFactory.getLog(AbstractGPFDistMessageHandler.class);
-
-	private volatile boolean autoStartup = false;
-
-	private volatile int phase = 0;
 
 	private volatile boolean running;
 
 	private final ReentrantLock lifecycleLock = new ReentrantLock();
 
-	@Override
-	public final boolean isAutoStartup() {
-		return this.autoStartup;
-	}
 
-	@Override
-	public final int getPhase() {
-		return this.phase;
-	}
-
-	@Override
 	public final boolean isRunning() {
 		this.lifecycleLock.lock();
 		try {
@@ -62,7 +46,7 @@ public abstract class AbstractGPFDistMessageHandler extends AbstractMessageHandl
 		}
 	}
 
-	@Override
+
 	public final void start() {
 		this.lifecycleLock.lock();
 		try {
@@ -84,7 +68,7 @@ public abstract class AbstractGPFDistMessageHandler extends AbstractMessageHandl
 		}
 	}
 
-	@Override
+
 	public final void stop() {
 		this.lifecycleLock.lock();
 		try {
@@ -106,7 +90,7 @@ public abstract class AbstractGPFDistMessageHandler extends AbstractMessageHandl
 		}
 	}
 
-	@Override
+
 	public final void stop(Runnable callback) {
 		this.lifecycleLock.lock();
 		try {
@@ -118,8 +102,7 @@ public abstract class AbstractGPFDistMessageHandler extends AbstractMessageHandl
 		}
 	}
 
-	@Override
-	protected final void handleMessageInternal(Message<?> message) throws Exception {
+	public final void handleMessage(Message<?> message) throws Exception {
 		try {
 			doWrite(message);
 		}
@@ -127,26 +110,6 @@ public abstract class AbstractGPFDistMessageHandler extends AbstractMessageHandl
 			throw new MessageHandlingException(message,
 					"failed to write Message payload to GPDB/HAWQ", e);
 		}
-	}
-
-	/**
-	 * Sets the auto startup.
-	 *
-	 * @param autoStartup the new auto startup
-	 * @see SmartLifecycle
-	 */
-	public void setAutoStartup(boolean autoStartup) {
-		this.autoStartup = autoStartup;
-	}
-
-	/**
-	 * Sets the phase.
-	 *
-	 * @param phase the new phase
-	 * @see SmartLifecycle
-	 */
-	public void setPhase(int phase) {
-		this.phase = phase;
 	}
 
 	/**

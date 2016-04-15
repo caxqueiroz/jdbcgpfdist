@@ -104,19 +104,15 @@ public class GPFDistMessageHandler extends AbstractGPFDistMessageHandler {
         }
     }
 
-    @Override
-    protected void onInit() throws Exception {
-        super.onInit();
-        Environment.initializeIfEmpty().assignErrorJournal();
-
-        log.info("onInit get called!!");
-    }
 
     @Override
     protected void doStart() {
+
         try {
 
+            Environment.initializeIfEmpty().assignErrorJournal();
             processor = RingBufferProcessor.create(false);
+            
             log.info("Creating gpfdist protocol listener on port=" + port);
             gpfdistServer = new GPFDistServer(processor, port, flushCount, flushTime, batchTimeout, batchCount);
             gpfdistServer.start();
