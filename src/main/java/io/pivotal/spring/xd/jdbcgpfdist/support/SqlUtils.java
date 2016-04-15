@@ -29,7 +29,9 @@ public abstract class SqlUtils {
 		StringBuilder buf = new StringBuilder();
 
 		// unique table name
-		String name = config.getTable() + "_ext_" + prefix;
+
+
+        String name = quotesEscape(config.getTable() + "_ext_" + prefix);
 		buf.append("CREATE READABLE EXTERNAL TABLE ");
 		buf.append(name);
 		buf.append(" ( ");
@@ -38,14 +40,14 @@ public abstract class SqlUtils {
 		ReadableTable externalTable = config.getExternalTable();
 		if (externalTable.getLike() != null) {
 			buf.append("LIKE ");
-			buf.append(config.getTable());
+			buf.append(quotesEscape(config.getTable()));
 		}
 		else if (StringUtils.hasText(externalTable.getColumns())) {
 			buf.append(externalTable.getColumns());
 		}
 		else {
 			buf.append("LIKE ");
-			buf.append(config.getTable());
+			buf.append(quotesEscape(config.getTable()));
 		}
 		buf.append(" ) ");
 
@@ -140,7 +142,7 @@ public abstract class SqlUtils {
 		String name = config.getTable() + "_ext_" + prefix;
 
 		b.append("DROP EXTERNAL TABLE ");
-		b.append(name);
+		b.append(quotesEscape(name));
 
 		return b.toString();
 
@@ -172,7 +174,7 @@ public abstract class SqlUtils {
 		String name = config.getTable() + "_ext_" + prefix;
 
 		b.append("INSERT INTO ");
-		b.append(config.getTable());
+		b.append(quotesEscape(config.getTable()));
 		b.append(" SELECT ");
 		if (StringUtils.hasText(config.getColumns())) {
 			b.append(config.getColumns());
@@ -181,7 +183,7 @@ public abstract class SqlUtils {
 			b.append("*");
 		}
 		b.append(" FROM ");
-		b.append(name);
+		b.append(quotesEscape(name));
 
 		return b.toString();
 	}
@@ -190,7 +192,7 @@ public abstract class SqlUtils {
 		StringBuilder b = new StringBuilder();
 		String name = config.getTable() + "_ext_" + prefix;
 		b.append("UPDATE ");
-		b.append(config.getTable());
+		b.append(quotesEscape(config.getTable()));
 		b.append(" into_table set ");
 
 		for (int i = 0; i < config.getUpdateColumns().size(); i++) {
@@ -201,7 +203,7 @@ public abstract class SqlUtils {
 		}
 
 		b.append(" FROM ");
-		b.append(name);
+		b.append(quotesEscape(name));
 		b.append(" from_table where ");
 
 		for (int i = 0; i < config.getMatchColumns().size(); i++) {
@@ -253,5 +255,9 @@ public abstract class SqlUtils {
 		}
 		return "\\u" + Integer.toHexString(ch);
 	}
+
+    private static String quotesEscape(String text){
+        return "\"" +  text + "\"";
+    }
 
 }
