@@ -50,7 +50,7 @@ public abstract class SqlUtils {
 		buf.append(" ) ");
 
 		// locations
-		buf.append("LOCATION(");
+		buf.append("LOCATION (");
 		if (overrideLocations != null && !overrideLocations.isEmpty()) {
 			buf.append(createLocationString(overrideLocations.toArray(new String[0])));
 		}
@@ -113,7 +113,7 @@ public abstract class SqlUtils {
 			buf.append("'");
 		}
 
-		if (externalTable.getSegmentRejectLimit() != null && externalTable.getSegmentRejectType() != null) {
+		if (externalTable.getSegmentRejectLimit() != null) {
 			if (externalTable.getLogErrorsInto() != null) {
 				buf.append(" LOG ERRORS INTO ");
 				buf.append(externalTable.getLogErrorsInto());
@@ -121,7 +121,7 @@ public abstract class SqlUtils {
 			buf.append(" SEGMENT REJECT LIMIT ");
 			buf.append(externalTable.getSegmentRejectLimit());
 			buf.append(" ");
-			buf.append(externalTable.getSegmentRejectType());
+
 		}
 
 		return buf.toString();

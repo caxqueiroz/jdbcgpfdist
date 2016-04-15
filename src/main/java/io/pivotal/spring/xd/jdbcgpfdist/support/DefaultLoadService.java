@@ -16,6 +16,8 @@
 
 package io.pivotal.spring.xd.jdbcgpfdist.support;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.Assert;
 
@@ -23,6 +25,8 @@ import java.util.UUID;
 
 
 public class DefaultLoadService implements LoadService {
+
+	private final Log log = LogFactory.getLog(DefaultLoadService.class);
 
 	private final JdbcTemplate jdbcTemplate;
 

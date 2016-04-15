@@ -39,7 +39,7 @@
         <property name="header" value="${header:}" />
         <property name="nullString" value="${nullString:}" />
         <property name="segmentRejectLimit" value="${segmentRejectLimit:}" />
-        <property name="logErrorsInto" value="${logErrorsInfo:}" />
+        <property name="logErrorsInto" value="${logErrorsInto:}" />
         <property name="locations" value="#{T(io.pivotal.spring.xd.jdbcgpfdist.support.NetworkUtils).getGPFDistUri(${port})}" />
     </bean>
 

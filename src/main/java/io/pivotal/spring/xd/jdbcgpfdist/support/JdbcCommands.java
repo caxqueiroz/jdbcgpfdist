@@ -113,6 +113,7 @@ public class JdbcCommands {
 
 	private boolean prepare() {
 		try {
+
 			if (log.isDebugEnabled()) {
 				log.debug("Executing prepare: " + prepareSql);
 			}
