@@ -16,12 +16,16 @@
 
 package io.pivotal.spring.xd.jdbcgpfdist.support;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
 
 
 public abstract class SqlUtils {
+
+    private static Log log = LogFactory.getLog(SqlUtils.class);
 
 	public static String createExternalReadableTable(LoadConfiguration config, String prefix, List<String> overrideLocations) {
 
@@ -257,7 +261,18 @@ public abstract class SqlUtils {
 	}
 
     private static String quotesEscape(String text){
-        return "\"" +  text + "\"";
+
+        if(text.contains(".")){
+
+            String[] values = text.split("\\.");
+
+            return values[0] + "." + "\"" +  values[1] + "\"";
+
+        }else{
+
+            return "\"" + text + "\"";
+        }
+
     }
 
 }
