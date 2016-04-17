@@ -17,8 +17,9 @@ package io.pivotal.spring.xd.jdbcgpfdist.support;
 
 public interface LoadService {
 
-	public void load(LoadConfiguration loadConfiguration);
+	void load(LoadConfiguration loadConfiguration);
 
-	public void load(LoadConfiguration loadConfiguration, RuntimeContext context);
+	void load(LoadConfiguration loadConfiguration, RuntimeContext context);
 
+	void unload(LoadConfiguration loadConfiguration, RuntimeContext context);
 }

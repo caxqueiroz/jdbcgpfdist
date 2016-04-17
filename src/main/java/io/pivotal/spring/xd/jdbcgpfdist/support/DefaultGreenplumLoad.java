@@ -45,4 +45,10 @@ public class DefaultGreenplumLoad implements GreenplumLoad {
 		loadService.load(loadConfiguration, context);
 	}
 
+	@Override
+	public void unload(RuntimeContext context) {
+		log.debug("Doing greenplum unload");
+		loadService.unload(loadConfiguration, context);
+	}
+
 }

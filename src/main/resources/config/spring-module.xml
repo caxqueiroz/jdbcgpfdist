@@ -7,12 +7,6 @@
 		http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <bean id="sqlTaskScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
-        <property name="waitForTasksToCompleteOnShutdown" value="true" />
-        <property name="awaitTerminationSeconds" value="${batchTimeout}" />
-    </bean>
-
-
     <bean id="greenplumControlFile" class="io.pivotal.spring.xd.jdbcgpfdist.support.ControlFileFactoryBean">
         <property name="controlFileResource" value="${controlFile:}" />
     </bean>
@@ -62,7 +56,7 @@
         <constructor-arg value="${delimiter}"/>
         <property name="rateInterval" value="${rateInterval}" />
         <property name="greenplumLoad" ref="greenplumLoad" />
-        <property name="sqlTaskScheduler" ref="sqlTaskScheduler" />
+
     </bean>
 
 
@@ -75,16 +69,16 @@
     </bean>
 
     <batch:job id="job-load-data">
-        <batch:step id="loadData">
+        <batch:step id="loadData" allow-start-if-complete="true">
             <batch:tasklet>
                 <batch:chunk reader="itemReader" writer="itemWriter" commit-interval="${commitInterval:10}" retry-limit="1">
                     <batch:retryable-exception-classes>
                         <batch:include class="org.springframework.batch.item.ItemReaderException"/>
                     </batch:retryable-exception-classes>
                 </batch:chunk>
-                <!--<batch:listeners>-->
-                    <!--<batch:listener ref="stepJobListener"/>-->
-                <!--</batch:listeners>-->
+                <batch:listeners>
+                    <batch:listener ref="stepJobListener"/>
+                </batch:listeners>
             </batch:tasklet>
         </batch:step>
     </batch:job>
@@ -100,7 +94,7 @@
 
     </bean>
 
-    <bean id="itemWriter" class="io.pivotal.spring.xd.jdbcgpfdist.GPFDistItemWriter">
+    <bean id="itemWriter" class="io.pivotal.spring.xd.jdbcgpfdist.GPFDistItemWriter" scope="step">
         <constructor-arg ref="gpfdist"/>
     </bean>
 
@@ -108,8 +102,8 @@
         <constructor-arg ref="jdbcDataSource"/>
     </bean>
 
-    <!--<bean id="stepJobListener" class="io.pivotal.spring.xd.jdbcgpfdist.JDBCGPFDISTExecutionListener">-->
-        <!--<constructor-arg ref="gpfdist"/>-->
-    <!--</bean>-->
+    <bean id="stepJobListener" class="io.pivotal.spring.xd.jdbcgpfdist.JDBCGPFDISTExecutionListener">
+        <constructor-arg ref="gpfdist"/>
+    </bean>
 
 </beans>

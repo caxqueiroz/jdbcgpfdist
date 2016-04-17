@@ -17,8 +17,10 @@ package io.pivotal.spring.xd.jdbcgpfdist.support;
 
 public interface GreenplumLoad {
 
-	public void load();
+	void load();
 
-	public void load(RuntimeContext context);
+	void load(RuntimeContext context);
+
+	void unload(RuntimeContext context);
 
 }

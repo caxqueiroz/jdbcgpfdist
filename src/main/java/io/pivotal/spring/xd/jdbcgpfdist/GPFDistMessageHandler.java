@@ -16,26 +16,17 @@
 package io.pivotal.spring.xd.jdbcgpfdist;
 
 import com.codahale.metrics.Meter;
-import io.pivotal.spring.xd.jdbcgpfdist.support.AbstractGPFDistMessageHandler;
 import io.pivotal.spring.xd.jdbcgpfdist.support.GreenplumLoad;
 import io.pivotal.spring.xd.jdbcgpfdist.support.NetworkUtils;
 import io.pivotal.spring.xd.jdbcgpfdist.support.RuntimeContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageHandlingException;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.util.StringUtils;
-import org.springframework.util.concurrent.SettableListenableFuture;
 import reactor.Environment;
 import reactor.core.processor.RingBufferProcessor;
 import reactor.io.buffer.Buffer;
 
-import java.util.Date;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
-
-public class GPFDistMessageHandler extends AbstractGPFDistMessageHandler {
+public class GPFDistMessageHandler {
 
     private final Log log = LogFactory.getLog(GPFDistMessageHandler.class);
 
@@ -59,15 +50,13 @@ public class GPFDistMessageHandler extends AbstractGPFDistMessageHandler {
 
     private GPFDistServer gpfdistServer;
 
-    private TaskScheduler sqlTaskScheduler;
-
-    private final TaskFuture taskFuture = new TaskFuture();
-
     private int rateInterval = 0;
 
     private Meter meter = null;
 
     private int meterCount = 0;
+
+    RuntimeContext context;
 
     public GPFDistMessageHandler(int port, int flushCount, int flushTime, int batchTimeout, int batchCount,
                                  int batchPeriod, String delimiter) {
@@ -81,87 +70,43 @@ public class GPFDistMessageHandler extends AbstractGPFDistMessageHandler {
         this.delimiter = StringUtils.hasLength(delimiter) ? delimiter : null;
     }
 
-    @Override
-    protected void doWrite(Message<?> message) throws Exception {
-        Object payload = message.getPayload();
-        if (payload instanceof String) {
-            String data = (String) payload;
-            if (delimiter != null) {
-                processor.onNext(Buffer.wrap(data + delimiter));
-            }
-            else {
-                processor.onNext(Buffer.wrap(data));
-            }
-            if (meter != null) {
-                if ((meterCount++ % rateInterval) == 0) {
-                    meter.mark(rateInterval);
-                    log.info("METER: 1 minute rate = " + meter.getOneMinuteRate() + " mean rate = " + meter.getMeanRate());
-                }
-            }
-        }
-        else {
-            throw new MessageHandlingException(message, "message not a String");
-        }
-    }
 
-    @Override
-    protected void onInit() throws Exception {
-        super.onInit();
-        Environment.initializeIfEmpty().assignErrorJournal();
+    public void start() {
 
-        log.info("onInit get called!!");
-    }
-
-    @Override
-    protected void doStart() {
         try {
+            //init counter
+            meterCount = 0;
 
+            context = new RuntimeContext();
+
+            Environment.initializeIfEmpty().assignErrorJournal();
             processor = RingBufferProcessor.create(false);
+
+            if (rateInterval > 0) {
+                meter = new Meter();
+            }
+
             log.info("Creating gpfdist protocol listener on port=" + port);
             gpfdistServer = new GPFDistServer(processor, port, flushCount, flushTime, batchTimeout, batchCount);
             gpfdistServer.start();
             log.info("gpfdist protocol listener running on port=" + gpfdistServer.getLocalPort());
-        }
-        catch (Exception e) {
+            context.addLocation(NetworkUtils.getGPFDistUri(gpfdistServer.getLocalPort()));
+
+
+        } catch (Exception e) {
             throw new RuntimeException("Error starting protocol listener", e);
         }
 
-        if (greenplumLoad != null) {
-            log.info("Scheduling gpload task with batchPeriod=" + batchPeriod);
 
-            final RuntimeContext context = new RuntimeContext();
-            context.addLocation(NetworkUtils.getGPFDistUri(gpfdistServer.getLocalPort()));
-
-            sqlTaskScheduler.schedule((new FutureTask<Void>(() -> {
-                boolean taskValue = true;
-                try {
-                    while (!taskFuture.interrupted) {
-                        try {
-                            greenplumLoad.load(context);
-                        }
-                        catch (Exception e) {
-                            log.error("Error in load", e);
-                        }
-                        Thread.sleep(batchPeriod * 1000);
-                    }
-                }
-                catch (Exception e) {
-                    taskValue = false;
-                }
-                taskFuture.set(taskValue);
-            }, null)), new Date());
-
-        }
-        else {
-            log.info("Skipping gpload tasks because greenplumLoad is not set");
-        }
     }
 
-    @Override
-    protected void doStop() {
+
+    public void stop() {
+
         boolean drained = false;
         if (greenplumLoad != null) {
 
+            greenplumLoad.load(context);
             // xd waits 30s to shutdown module, so lets wait 25 to drain
             long waitDrain = System.currentTimeMillis() + 25000l;
 
@@ -185,19 +130,6 @@ public class GPFDistMessageHandler extends AbstractGPFDistMessageHandler {
                 }
             }
 
-            // try to wait current load operation to finish.
-            taskFuture.interruptTask();
-            try {
-                long now = System.currentTimeMillis();
-                // wait a bit more than batch period
-                log.info("Cancelling loading task");
-                Boolean value = taskFuture.get(batchTimeout + batchPeriod + 2, TimeUnit.SECONDS);
-                log.info("Stopping, got future value " + value + " from task which took "
-                        + (System.currentTimeMillis() - now) + "ms");
-            }
-            catch (Exception e) {
-                log.warn("Got error from task wait value which may indicate trouble", e);
-            }
         }
 
         try {
@@ -214,15 +146,31 @@ public class GPFDistMessageHandler extends AbstractGPFDistMessageHandler {
             }
             log.info("Shutting down protocol listener");
             gpfdistServer.stop();
+
         }
         catch (Exception e) {
             log.warn("Error shutting down protocol listener", e);
         }
     }
 
-    public void setSqlTaskScheduler(TaskScheduler sqlTaskScheduler) {
-        this.sqlTaskScheduler = sqlTaskScheduler;
+    public void sendMessage(String message)  {
+
+        if (delimiter != null) {
+            processor.onNext(Buffer.wrap(message + delimiter));
+        }
+        else {
+            processor.onNext(Buffer.wrap(message));
+        }
+        if (meter != null) {
+            if ((meterCount++ % rateInterval) == 0) {
+                meter.mark(rateInterval);
+                log.info("METER: 1 minute rate = " + meter.getOneMinuteRate() + " mean rate = " + meter.getMeanRate());
+                greenplumLoad.load(context);
+            }
+        }
+
     }
+
 
     public void setGreenplumLoad(GreenplumLoad greenplumLoad) {
         this.greenplumLoad = greenplumLoad;
@@ -230,18 +178,6 @@ public class GPFDistMessageHandler extends AbstractGPFDistMessageHandler {
 
     public void setRateInterval(int rateInterval) {
         this.rateInterval = rateInterval;
-        if (rateInterval > 0) {
-            meter = new Meter();
-        }
-    }
 
-    private static class TaskFuture extends SettableListenableFuture<Boolean> {
-
-        boolean interrupted = false;
-
-        @Override
-        protected void interruptTask() {
-            interrupted = true;
-        }
     }
 }

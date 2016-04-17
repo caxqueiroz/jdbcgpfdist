@@ -128,6 +128,7 @@ public class JdbcCommands {
 
 	private boolean run() {
 		try {
+
 			if (log.isDebugEnabled()) {
 				log.debug("Executing run: " + runSql);
 			}
@@ -142,6 +143,7 @@ public class JdbcCommands {
 
 	private boolean clean() {
 		try {
+
 			if (log.isDebugEnabled()) {
 				log.debug("Executing clean: " + cleanSql);
 			}
