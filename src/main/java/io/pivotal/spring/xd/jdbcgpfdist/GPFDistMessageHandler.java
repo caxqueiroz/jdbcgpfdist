@@ -21,10 +21,16 @@ import io.pivotal.spring.xd.jdbcgpfdist.support.NetworkUtils;
 import io.pivotal.spring.xd.jdbcgpfdist.support.RuntimeContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.util.StringUtils;
+import org.springframework.util.concurrent.SettableListenableFuture;
 import reactor.Environment;
 import reactor.core.processor.RingBufferProcessor;
 import reactor.io.buffer.Buffer;
+
+import java.util.Date;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 
 public class GPFDistMessageHandler {
 
@@ -56,7 +62,12 @@ public class GPFDistMessageHandler {
 
     private int meterCount = 0;
 
-    RuntimeContext context;
+    private RuntimeContext context;
+
+    private  TaskFuture taskFuture;
+
+    private TaskScheduler sqlTaskScheduler;
+
 
     public GPFDistMessageHandler(int port, int flushCount, int flushTime, int batchTimeout, int batchCount,
                                  int batchPeriod, String delimiter) {
@@ -74,6 +85,8 @@ public class GPFDistMessageHandler {
     public void start() {
 
         try {
+
+            taskFuture =  new TaskFuture();
             //init counter
             meterCount = 0;
 
@@ -92,6 +105,24 @@ public class GPFDistMessageHandler {
             log.info("gpfdist protocol listener running on port=" + gpfdistServer.getLocalPort());
             context.addLocation(NetworkUtils.getGPFDistUri(gpfdistServer.getLocalPort()));
 
+
+            log.info("Scheduling gpfdist task with batchPeriod=" + batchPeriod);
+            sqlTaskScheduler.schedule((new FutureTask<Void>(() -> {
+                boolean taskValue = true;
+                try {
+                    while(!taskFuture.interrupted) {
+                        try {
+                            greenplumLoad.load(context);
+                        } catch (Exception e) {
+                            log.error("Error in load", e);
+                        }
+                        Thread.sleep(batchPeriod*1000);
+                    }
+                } catch (Exception e) {
+                    taskValue = false;
+                }
+                taskFuture.set(taskValue);
+            }, null)), new Date());
 
         } catch (Exception e) {
             throw new RuntimeException("Error starting protocol listener", e);
@@ -132,6 +163,21 @@ public class GPFDistMessageHandler {
 
         }
 
+        // try to wait current load operation to finish.
+        taskFuture.interruptTask();
+        try {
+            long now = System.currentTimeMillis();
+            // wait a bit more than batch period
+            log.info("Cancelling loading task");
+            Boolean value = taskFuture.get(batchTimeout + batchPeriod + 2, TimeUnit.SECONDS);
+            log.info("Stopping, got future value " + value + " from task which took "
+                    + (System.currentTimeMillis() - now) + "ms");
+        }
+        catch (Exception e) {
+            log.warn("Got error from task wait value which may indicate trouble", e);
+        }
+
+
         try {
             if (drained) {
                 log.info("Sending onComplete to processor");
@@ -165,12 +211,15 @@ public class GPFDistMessageHandler {
             if ((meterCount++ % rateInterval) == 0) {
                 meter.mark(rateInterval);
                 log.info("METER: 1 minute rate = " + meter.getOneMinuteRate() + " mean rate = " + meter.getMeanRate());
-                greenplumLoad.load(context);
+//                greenplumLoad.load(context);
             }
         }
 
     }
 
+    public void setSqlTaskScheduler(TaskScheduler sqlTaskScheduler) {
+        this.sqlTaskScheduler = sqlTaskScheduler;
+    }
 
     public void setGreenplumLoad(GreenplumLoad greenplumLoad) {
         this.greenplumLoad = greenplumLoad;
@@ -178,6 +227,18 @@ public class GPFDistMessageHandler {
 
     public void setRateInterval(int rateInterval) {
         this.rateInterval = rateInterval;
+
+    }
+
+    private static class TaskFuture extends SettableListenableFuture<Boolean> {
+
+        boolean interrupted = false;
+
+        @Override
+        protected void interruptTask() {
+            interrupted = true;
+        }
+
 
     }
 }
